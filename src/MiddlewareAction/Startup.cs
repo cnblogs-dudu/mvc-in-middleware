@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -45,13 +46,18 @@ namespace MvcInMiddleware
                 {
                     var routeData = new RouteData();
                     routeData.Values.Add("message", "Hello World!");
-                    var actionDesciptor = CreateActionDescriptor<HomeController>(nameof(HomeController.Index), routeData);
-                    var actionContext = new ActionContext(context, routeData, actionDesciptor);                    
-                    var actionInvokerFactory = app.ApplicationServices.GetRequiredService<IActionInvokerFactory>();
-                    var invoker = actionInvokerFactory.CreateInvoker(actionContext);
-                    await invoker.InvokeAsync();
+                    await DriveControllerAction(context, routeData, app);
                 });
             });
+        }
+
+        private async Task DriveControllerAction(HttpContext context , RouteData routeData, IApplicationBuilder app)
+        {
+            var actionDesciptor = CreateActionDescriptor<HomeController>(nameof(HomeController.Index), routeData);
+            var actionContext = new ActionContext(context, routeData, actionDesciptor);
+            var actionInvokerFactory = app.ApplicationServices.GetRequiredService<IActionInvokerFactory>(); //ActionInvokerFactory
+            var invoker = actionInvokerFactory.CreateInvoker(actionContext); //ControllerActionInvoker
+            await invoker.InvokeAsync();
         }
 
         private static ActionDescriptor CreateActionDescriptor<TController>(
@@ -79,6 +85,7 @@ namespace MvcInMiddleware
             routeData.Values.Add("controller", actionDesciptor.ControllerName.Replace("Controller", ""));
             routeData.Values.Add("action", actionDesciptor.ActionName);
 
+            //For binding action parameters
             foreach (var routeValue in routeData.Values)
             {
                 var parameter = new ParameterDescriptor();
