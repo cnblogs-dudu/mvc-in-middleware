@@ -60,8 +60,7 @@ namespace MvcInMiddleware
             await invoker.InvokeAsync();
         }
 
-        private static ActionDescriptor CreateActionDescriptor<TController>(
-            string actionName, RouteData routeData)
+        private static ActionDescriptor CreateActionDescriptor<TController>(string actionName, RouteData routeData)
         {
             var controllerType = typeof(TController);
             var actionDesciptor = new ControllerActionDescriptor()
@@ -69,7 +68,7 @@ namespace MvcInMiddleware
                 ControllerName = controllerType.Name,
                 ActionName = actionName,
                 FilterDescriptors = new List<FilterDescriptor>(),
-                MethodInfo = typeof(HomeController).GetMethod(actionName, BindingFlags.Public | BindingFlags.Instance),
+                MethodInfo = controllerType.GetMethod(actionName, BindingFlags.Public | BindingFlags.Instance),
                 ControllerTypeInfo = controllerType.GetTypeInfo(),
                 Parameters = new List<ParameterDescriptor>(),
                 Properties = new Dictionary<object, object>(),
