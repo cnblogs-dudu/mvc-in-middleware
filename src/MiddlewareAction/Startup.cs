@@ -51,7 +51,7 @@ namespace MvcInMiddleware
             });
         }
 
-        private async Task DriveControllerAction(HttpContext context , RouteData routeData, IApplicationBuilder app)
+        private static async Task DriveControllerAction(HttpContext context , RouteData routeData, IApplicationBuilder app)
         {
             var actionDesciptor = CreateActionDescriptor<HomeController>(nameof(HomeController.Index), routeData);
             var actionContext = new ActionContext(context, routeData, actionDesciptor);
